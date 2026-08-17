@@ -1,11 +1,12 @@
 # pagecrew.github.io
 Personal site and hosting space for small web projects (as of Aug '26).
 
-## Notes to Self...
-
 ## Live projects
 
 - [Harlem Walking Map](https://pagecrew.github.io/harlem-map/) — interactive map of favorite & useful spots in Harlem
+
+
+## Notes to Self...
 
 ## Adding a new project
 
