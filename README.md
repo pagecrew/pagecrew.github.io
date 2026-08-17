@@ -23,7 +23,7 @@ Remember to add each new project to the "Live projects" list above.
 ## Finding the pastable code (full HTML file) from Claude
 double-clicking opens a downloaded Claude html file and renders it in the browser, which hides the code. Below are two ways to get the actual text:
 
-## Option A — View the source in Chrome (matches the "paste into GitHub" method I gave you)
+### Option A — View the source in Chrome (matches the "paste into GitHub" method I gave you)
 
 With the map open in Chrome, press Cmd+Option+U (Mac) or Ctrl+U (Windows). This opens a new tab showing the raw HTML code as plain text.
 Click anywhere in that tab, then Cmd+A / Ctrl+A to select all of it.
@@ -32,7 +32,7 @@ Go to GitHub's "Create new file" editor and paste (Cmd+V / Ctrl+V) into the code
 
 The file has one very long line in it (the mapping library is bundled in), so the source view might look like a giant wall of text with a lot of horizontal scrolling — that's normal, Select All still grabs everything correctly.
 
-## Option B — Skip copy/paste entirely by uploading the file directly
+### Option B — Skip copy/paste entirely by uploading the file directly
 
 This avoids the whole "where's the code" problem:
 
