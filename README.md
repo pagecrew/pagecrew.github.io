@@ -30,12 +30,10 @@ Click anywhere in that tab, then Cmd+A / Ctrl+A to select all of it.
 Cmd+C / Ctrl+C to copy.
 Go to GitHub's "Create new file" editor and paste (Cmd+V / Ctrl+V) into the code box.
 
-The file has one very long line in it (the mapping library is bundled in), so the source view might look like a giant wall of text with a lot of horizontal scrolling — that's normal, Select All still grabs everything correctly.
-
 ### Option B — Skip copy/paste entirely by uploading the file directly
 
 This avoids the whole "where's the code" problem:
 
-In your harlem-map folder on GitHub (create it first if needed, e.g. by making the folder via a new file), click Add file → Upload files.
-Drag your downloaded .html file straight into the upload area and commit — no need to open or view it at all.
+In the harlem-map folder on GitHub (create it first if needed, e.g. by making the folder via a new file), click Add file → Upload files.
+Drag the downloaded .html file straight into the upload area and commit — no need to open or view it at all.
 Afterward, click into that uploaded file, click the pencil (Edit) icon, and there's an editable filename field at the top of the page — change it to index.html and commit again. (GitHub Pages specifically looks for a file named index.html to serve as the page.)
