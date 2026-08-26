@@ -437,7 +437,7 @@
     const banner = document.getElementById('pblBanner');
     if(pbl){
       banner.style.display='block';
-      const relabeled = pbl.replace(/\bIdea:/g, 'Big Idea:').replace(/\bPBL Ideas:/g, 'PBL Project Ideas:');
+      const relabeled = pbl.replace(/(?<!Big )\bIdea:/g, 'Big Idea:').replace(/(?<!PBL Project )\bPBL Ideas:/g, 'PBL Project Ideas:');
       // Every grade's Digital Map labels its PBL fields a little differently (Time Period:,
       // PBL idea:, Theme:, Title:, EQ:, Product(s):, etc.) rather than one fixed set, so bold
       // any short "Label:" a line starts with instead of matching a hardcoded whitelist.

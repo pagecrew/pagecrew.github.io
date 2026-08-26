@@ -437,12 +437,15 @@
     const banner = document.getElementById('pblBanner');
     if(pbl){
       banner.style.display='block';
-      const relabeled = pbl.replace(/\bIdea:/g, 'Big Idea:').replace(/\bPBL Ideas:/g, 'PBL Project Ideas:');
-      const PBL_SUBTITLES = ['Time Period:', 'Big Idea:', 'PBL Project Ideas:'];
+      const relabeled = pbl.replace(/(?<!Big )\bIdea:/g, 'Big Idea:').replace(/(?<!PBL Project )\bPBL Ideas:/g, 'PBL Project Ideas:');
+      // Every grade's Digital Map labels its PBL fields a little differently (Time Period:,
+      // PBL idea:, Theme:, Title:, EQ:, Product(s):, etc.) rather than one fixed set, so bold
+      // any short "Label:" a line starts with instead of matching a hardcoded whitelist.
+      const LABEL_LINE_RE = /^([A-Za-z][A-Za-z0-9 /()'.-]{0,42}:)(\s*)/;
       const htmlLines = relabeled.split('\n').map(line => {
-        const hit = PBL_SUBTITLES.find(label => line.startsWith(label));
-        if(hit){
-          return `<strong class="pbl-subtitle">${escapeHtml(hit)}</strong>${escapeHtml(line.slice(hit.length))}`;
+        const m = line.match(LABEL_LINE_RE);
+        if(m){
+          return `<strong class="pbl-subtitle">${escapeHtml(m[1])}</strong>${escapeHtml(line.slice(m[1].length))}`;
         }
         return escapeHtml(line);
       }).join('\n');
