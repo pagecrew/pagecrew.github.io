@@ -16,7 +16,8 @@
   header p{ margin:0; color:#CFE0F5; font-size:14px; }
   main{ max-width:900px; margin:0 auto; padding:32px; }
   .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-  .card{ display:block; background:#fff; border:1px solid var(--border); border-left:4px solid var(--grade-color, var(--navy)); border-radius:10px; padding:20px; text-decoration:none; color:var(--text); box-shadow:0 1px 3px rgba(20,30,50,.06); transition:box-shadow .15s ease, transform .15s ease; }
+  .card{ display:block; background:#fff; border:1px solid var(--border); border-radius:10px; padding:22px 20px 20px; text-decoration:none; color:var(--text); box-shadow:0 1px 3px rgba(20,30,50,.06); transition:box-shadow .15s ease, transform .15s ease; position:relative; overflow:hidden; }
+  .card::before{ content:''; position:absolute; top:0; left:0; right:0; height:7px; background:linear-gradient(90deg, var(--grade-color, var(--navy)), var(--grade-color-dark, var(--grade-color, var(--navy-dark)))); }
   .card:hover{ box-shadow:0 4px 14px rgba(20,30,50,.12); transform:translateY(-1px); }
   .card .grade{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:var(--gold); color:var(--grade-color, var(--navy-dark)); font-weight:700; margin-bottom:10px; }
   .card .name{ font-weight:700; font-size:15px; margin-bottom:4px; }
@@ -32,32 +33,32 @@
 </header>
 <main>
   <div class="grid">
-    <a class="card" href="kindergarten/" style="--grade-color:#8C4A3D;">
+    <a class="card" href="kindergarten/" style="--grade-color:#8C4A3D; --grade-color-dark:#62342B;">
       <span class="grade">K</span>
       <div class="name">Kindergarten</div>
       <div class="status">Full year &middot; ready</div>
     </a>
-    <a class="card" href="1st-grade/" style="--grade-color:#2F5D4F;">
+    <a class="card" href="1st-grade/" style="--grade-color:#3F356E; --grade-color-dark:#2C254D;">
       <span class="grade">1</span>
       <div class="name">1st Grade</div>
       <div class="status">Full year &middot; ready</div>
     </a>
-    <a class="card" href="2nd-grade/" style="--grade-color:#1F5C5C;">
+    <a class="card" href="2nd-grade/" style="--grade-color:#1F5C5C; --grade-color-dark:#164040;">
       <span class="grade">2</span>
       <div class="name">2nd Grade</div>
       <div class="status">Full year &middot; ready</div>
     </a>
-    <a class="card" href="3rd-grade/" style="--grade-color:#173B63;">
+    <a class="card" href="3rd-grade/" style="--grade-color:#173B63; --grade-color-dark:#0F2A47;">
       <span class="grade">3</span>
       <div class="name">3rd Grade</div>
       <div class="status">Full year &middot; ready</div>
     </a>
-    <a class="card" href="4th-grade/" style="--grade-color:#5B3358;">
+    <a class="card" href="4th-grade/" style="--grade-color:#5B3358; --grade-color-dark:#3F2340;">
       <span class="grade">4</span>
       <div class="name">4th Grade</div>
       <div class="status">Full year &middot; ready</div>
     </a>
-    <a class="card" href="5th-grade/" style="--grade-color:#6B2737;">
+    <a class="card" href="5th-grade/" style="--grade-color:#6B2737; --grade-color-dark:#4A1B27;">
       <span class="grade">5</span>
       <div class="name">5th Grade</div>
       <div class="status">Full year &middot; ready</div>
