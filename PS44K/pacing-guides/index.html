@@ -16,9 +16,9 @@
   header p{ margin:0; color:#CFE0F5; font-size:14px; }
   main{ max-width:900px; margin:0 auto; padding:32px; }
   .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-  .card{ display:block; background:#fff; border:1px solid var(--border); border-radius:10px; padding:20px; text-decoration:none; color:var(--text); box-shadow:0 1px 3px rgba(20,30,50,.06); transition:box-shadow .15s ease, transform .15s ease; }
+  .card{ display:block; background:#fff; border:1px solid var(--border); border-left:4px solid var(--grade-color, var(--navy)); border-radius:10px; padding:20px; text-decoration:none; color:var(--text); box-shadow:0 1px 3px rgba(20,30,50,.06); transition:box-shadow .15s ease, transform .15s ease; }
   .card:hover{ box-shadow:0 4px 14px rgba(20,30,50,.12); transform:translateY(-1px); }
-  .card .grade{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:var(--gold); color:var(--navy-dark); font-weight:700; margin-bottom:10px; }
+  .card .grade{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:var(--gold); color:var(--grade-color, var(--navy-dark)); font-weight:700; margin-bottom:10px; }
   .card .name{ font-weight:700; font-size:15px; margin-bottom:4px; }
   .card .status{ font-size:12.5px; color:var(--text-muted); }
   .card.placeholder{ opacity:.55; pointer-events:none; }
@@ -32,36 +32,36 @@
 </header>
 <main>
   <div class="grid">
-    <a class="card" href="3rd-grade/">
-      <span class="grade">3</span>
-      <div class="name">3rd Grade</div>
-      <div class="status">Full year &middot; ready</div>
-    </a>
-    <div class="card placeholder">
+    <div class="card placeholder" style="--grade-color:#8C4A3D;">
       <span class="grade">K</span>
       <div class="name">Kindergarten</div>
       <div class="status">Coming soon</div>
     </div>
-    <div class="card placeholder">
+    <div class="card placeholder" style="--grade-color:#2F5D4F;">
       <span class="grade">1</span>
       <div class="name">1st Grade</div>
       <div class="status">Coming soon</div>
     </div>
-    <div class="card placeholder">
+    <div class="card placeholder" style="--grade-color:#1F5C5C;">
       <span class="grade">2</span>
       <div class="name">2nd Grade</div>
       <div class="status">Coming soon</div>
     </div>
-    <div class="card placeholder">
+    <a class="card" href="3rd-grade/" style="--grade-color:#173B63;">
+      <span class="grade">3</span>
+      <div class="name">3rd Grade</div>
+      <div class="status">Full year &middot; ready</div>
+    </a>
+    <div class="card placeholder" style="--grade-color:#5B3358;">
       <span class="grade">4</span>
       <div class="name">4th Grade</div>
       <div class="status">Coming soon</div>
     </div>
-    <div class="card placeholder">
+    <a class="card" href="5th-grade/" style="--grade-color:#6B2737;">
       <span class="grade">5</span>
       <div class="name">5th Grade</div>
-      <div class="status">Coming soon</div>
-    </div>
+      <div class="status">Full year &middot; ready</div>
+    </a>
   </div>
 </main>
 <footer>pagecrew.github.io/PS44K/pacing-guides</footer>
