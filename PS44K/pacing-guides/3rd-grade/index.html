@@ -79,8 +79,37 @@
     padding:7px 10px; border-radius:7px; border:1px solid var(--border); font-size:13px;
     background:var(--card); color:var(--text); max-width:260px;
   }
+  .search-wrap{ position:relative; }
   .search-wrap input{
-    padding:7px 10px; border-radius:7px; border:1px solid var(--border); font-size:13px; width:190px;
+    padding:7px 10px; border-radius:7px; border:1px solid var(--border); font-size:13px; width:220px;
+  }
+  .search-results{
+    display:none; position:absolute; top:calc(100% + 6px); right:0; width:360px; max-height:380px;
+    overflow-y:auto; background:#fff; border:1px solid var(--border); border-radius:9px;
+    box-shadow:var(--shadow); z-index:60;
+  }
+  .search-results.open{ display:block; }
+  .search-results .sr-group{ border-bottom:1px solid var(--border); }
+  .search-results .sr-group:last-child{ border-bottom:none; }
+  .search-results .sr-group-head{
+    display:flex; align-items:baseline; gap:8px; padding:8px 12px 4px;
+  }
+  .search-results .sr-code{ font-weight:700; color:var(--navy); font-size:13px; }
+  .search-results .sr-count{ font-size:11px; color:var(--text-muted); font-style:italic; }
+  .search-results .sr-unit{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:6px; width:100%; text-align:left;
+    padding:6px 12px 6px 20px; border:none; background:none; cursor:pointer; font-size:12px; color:var(--text);
+  }
+  .search-results .sr-unit:last-child{ padding-bottom:9px; }
+  .search-results .sr-unit:hover{ background:#F5F8FC; }
+  .search-results .sr-subj{ font-weight:700; color:var(--text-muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; }
+  .search-results .sr-unit-label{ color:var(--text); }
+  .search-results .sr-unit-week{ color:var(--text-muted); margin-left:auto; font-size:11px; white-space:nowrap; }
+  .search-results .sr-empty{ padding:12px; font-size:12.5px; color:var(--text-muted); font-style:italic; }
+  .chip.flash{ animation:chipFlash 1.6s ease; }
+  @keyframes chipFlash{
+    0%{ box-shadow:0 0 0 4px rgba(240,180,41,.85); }
+    100%{ box-shadow:0 0 0 0 rgba(240,180,41,0); }
   }
 
   /* ---------- Week banner ---------- */
@@ -242,7 +271,10 @@
     <button class="btn" id="btnToday" style="color:var(--navy); background:#fff; border:1px solid var(--border);">Jump to today</button>
   </div>
   <div class="nav-group">
-    <div class="search-wrap"><input type="text" id="searchBox" placeholder="Find a standard code…"></div>
+    <div class="search-wrap">
+      <input type="text" id="searchBox" placeholder="Find a standard code…" autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+    </div>
   </div>
 </div>
 
@@ -550,13 +582,115 @@
     if(e.target === m) m.classList.remove('show');
   }));
 
-  // ---------- Search ----------
-  document.getElementById('searchBox').addEventListener('input', function(e){
-    const q = e.target.value.trim().toUpperCase();
-    document.querySelectorAll('.chip').forEach(chip => {
-      const match = q && chip.dataset.code.toUpperCase().includes(q);
-      chip.style.outline = match ? '2px solid var(--gold)' : 'none';
+  // ---------- Search (searches the whole year, not just the visible week) ----------
+  // A standard is rarely taught in just one unit — EL Education / enVision revisit the
+  // same code across several modules through the year. So the index below is keyed by
+  // code -> every DISTINCT UNIT that teaches it (not every day, not every week), each
+  // with the week range it spans, so the dropdown can show "this code shows up in these
+  // N units" instead of silently only surfacing the first one.
+  const codeIndex = {};
+  weeks.forEach((w, wi) => {
+    ROW_DEFS.forEach(rd => {
+      if(!rd.listKey) return;
+      const seenModIds = new Set();
+      w.days.forEach(d => {
+        const modId = d[rd.idKey];
+        if(modId === null || modId === undefined) return;
+        if(seenModIds.has(modId)) return;
+        seenModIds.add(modId);
+        const codes = d[rd.listKey] || [];
+        const unitKey = rd.key + ':' + modId;
+        codes.forEach(code => {
+          if(!codeIndex[code]) codeIndex[code] = {};
+          const units = codeIndex[code];
+          if(!units[unitKey]){
+            units[unitKey] = { subjectKey: rd.key, moduleLabel: d[rd.labelKey] || '', firstWeek: wi, lastWeek: wi };
+          } else {
+            units[unitKey].firstWeek = Math.min(units[unitKey].firstWeek, wi);
+            units[unitKey].lastWeek = Math.max(units[unitKey].lastWeek, wi);
+          }
+        });
+      });
     });
+  });
+  // Flatten each code's unit-map into a sorted array (chronological by first week) for rendering.
+  Object.keys(codeIndex).forEach(code => {
+    codeIndex[code] = Object.values(codeIndex[code]).sort((a,b) => a.firstWeek - b.firstWeek);
+  });
+
+  const searchBoxEl = document.getElementById('searchBox');
+  const searchResultsEl = document.getElementById('searchResults');
+
+  function closeSearchResults(){
+    searchResultsEl.classList.remove('open');
+    searchResultsEl.innerHTML = '';
+  }
+
+  function jumpToStandard(code, weekIdx){
+    renderWeek(weekIdx);
+    // renderWeek rebuilds the grid synchronously, but give the browser a tick to paint
+    // before we query for the chip so layout/scroll math is accurate.
+    setTimeout(() => {
+      const chip = document.querySelector(`.chip[data-code="${CSS.escape(code)}"]`);
+      if(!chip) return;
+      const panel = chip.closest('.module-panel');
+      if(panel && !panel.classList.contains('open')){
+        panel.classList.add('open');
+        const toggleBtn = document.querySelector(`.module-toggle[data-target="${panel.id}"]`);
+        if(toggleBtn) toggleBtn.classList.add('open');
+      }
+      chip.scrollIntoView({ behavior:'smooth', block:'center' });
+      chip.classList.remove('flash');
+      // force reflow so the animation restarts if the same chip is jumped to twice in a row
+      void chip.offsetWidth;
+      chip.classList.add('flash');
+    }, 30);
+  }
+
+  searchBoxEl.addEventListener('input', function(e){
+    const q = e.target.value.trim().toUpperCase();
+    if(!q){ closeSearchResults(); return; }
+    // Exact code matches first, then everything else that contains the query, each group
+    // sorted alphabetically — so typing "RI.3.1" surfaces RI.3.1 above RI.3.10, RI.3.11, etc.
+    const allMatches = Object.keys(codeIndex).filter(code => code.toUpperCase().includes(q));
+    const exact = allMatches.filter(c => c.toUpperCase() === q).sort();
+    const partial = allMatches.filter(c => c.toUpperCase() !== q).sort();
+    const matches = exact.concat(partial);
+    if(!matches.length){
+      searchResultsEl.innerHTML = `<div class="sr-empty">No standard code matches "${escapeHtml(e.target.value.trim())}" anywhere this year.</div>`;
+      searchResultsEl.classList.add('open');
+      return;
+    }
+    searchResultsEl.innerHTML = matches.slice(0, 12).map(code => {
+      const units = codeIndex[code];
+      const countNote = units.length > 1 ? `<span class="sr-count">${units.length} units</span>` : '';
+      const unitRows = units.map(u => {
+        const subjLabel = u.subjectKey === 'ela' ? 'ELA' : 'Math';
+        const weekLabel = u.firstWeek === u.lastWeek
+          ? weeks[u.firstWeek].label
+          : `${weeks[u.firstWeek].label}–${weeks[u.lastWeek].label}`;
+        return `<button type="button" class="sr-unit" data-code="${escapeHtml(code)}" data-week="${u.firstWeek}">
+          <span class="sr-subj">${subjLabel}</span><span class="sr-unit-label">${escapeHtml(u.moduleLabel)}</span><span class="sr-unit-week">${escapeHtml(weekLabel)}</span>
+        </button>`;
+      }).join('');
+      return `<div class="sr-group">
+        <div class="sr-group-head"><span class="sr-code">${escapeHtml(code)}</span>${countNote}</div>
+        ${unitRows}
+      </div>`;
+    }).join('');
+    searchResultsEl.classList.add('open');
+  });
+
+  searchResultsEl.addEventListener('click', function(e){
+    const btn = e.target.closest('.sr-unit');
+    if(!btn) return;
+    jumpToStandard(btn.dataset.code, parseInt(btn.dataset.week, 10));
+    closeSearchResults();
+    searchBoxEl.value = btn.dataset.code;
+  });
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.search-wrap')) closeSearchResults();
   });
 
   // ---------- init ----------
