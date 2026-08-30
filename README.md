@@ -5,6 +5,10 @@ Personal site and hosting space for small web projects (as of Aug '26).
 
 - [Harlem Walking Map](https://pagecrew.github.io/harlem-map/) — interactive map of favorite & useful spots in Harlem
 
+- [PS 44K Pacing Guides in pagecrew](https://pagecrew.github.io/PS44K/pacing-guides/)
+
+- - [PS 44K Pacing Guides in PS 44K](https://ps44k.github.io/pacing-guides/index)
+
 
 ## Notes to Self...
 
