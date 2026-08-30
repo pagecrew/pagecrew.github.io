@@ -1103,7 +1103,13 @@ const PLACES = [
 {"place":"Pompette Wine Shop","address":"79 W 131st St (at Lenox), New York, 10037","area":"Malcolm X Blvd (Lenox), above 125th","type":"Wine shop","notes":"Creative selection","num":22,"lat":40.811327951572,"lon":-73.941986136972},
 {"place":"Thai Super","address":"166 E 118th St, New York, NY 10035","area":"Near Home/East Side","type":"Delivery","notes":"Very fast, good basic reliable Thai food","num":23,"lat":40.799659322768,"lon":-73.940187434085},
 {"place":"The Good Good","address":"1694 Park Ave (at 119th), New York, NY 10035","area":"Near Home/East Side","type":"Restaurant","notes":"Cozy neighborhood bar and restaurant","num":24,"lat":40.801111291759,"lon":-73.942005076064},
-{"place":"Maya Angelou house","address":"58 W. 120th St., New York, NY 10035","area":"120th St (near Malcolm Blvd/Lenox)","type":"Historical Landmark","notes":"Poet and civil rights activist owned this beautifully restored five-story historic townhouse, Nic Ashford & Valerie Simpson found it for her","num":25,"lat":40.804024469984,"lon":-73.946636610899}
+{"place":"Maya Angelou house","address":"58 W. 120th St., New York, NY 10035","area":"120th St (near Malcolm Blvd/Lenox)","type":"Historical Landmark","notes":"Poet and civil rights activist owned this beautifully restored five-story historic townhouse, Nic Ashford & Valerie Simpson found it for her","num":25,"lat":40.804024469984,"lon":-73.946636610899},
+{"place":"Schomburg Center for Research in Black Culture","address":"515 Malcolm X Boulevard at West 135th Street, New York, NY 10037","area":"Upper Central Harlem","type":"Museum, Library, Research Center","notes":"From the NY Public Library: \"A national landmark and world-renowned research center located in the heart of Harlem, the Schomburg Center stewards a collection of 11 million items and is dedicated to the collection, preservation, and exhibition of Black history and culture.\"","num":26,"lat":40.814753266163,"lon":-73.940469935387},
+{"place":"Studio Museum in Harlem","address":"144 West 125th Street, New York, NY 10027","area":"125th St","type":"Museum","notes":"Open Wed–Sun, 11am–6pm (Fri/Sat hours may vary; closed Mon & Tues). From the SMiH: \"the nexus for artists of African descent locally, nationally, and internationally and for work that has been inspired and influenced by Black culture.\"","num":27,"lat":40.807929822364,"lon":-73.946010210855},
+{"place":"Fifth on the Park","address":"1485 5th Avenue, New York, NY 10035","area":"Central Harlem","type":"Home","notes":"Built in 2009, this building has 28 floors and sits at the base of Marcus Garvey Park","num":28,"lat":40.802806052385,"lon":-73.944816006304},
+{"place":"Morningside Park","address":"116th St and Morningside Ave, New York, NY","area":"Lower West Harlem","type":"Park","notes":"Bounded by W 110th St to the south, W 123rd St to the north, Morningside Ave to the east, and Morningside Dr to the west","num":29,"lat":40.8049704,"lon":-73.9568027},
+{"place":"Farmers Market at 110th and Morningside","address":"W. 110th St and Manhattan Ave, New York, NY","area":"Morningside Park","type":"Farmers' Market","notes":"Popular and large, Saturdays 9am–2pm","num":30,"lat":40.8011266,"lon":-73.9596806},
+{"place":"Farmers Market Central Park (small)","address":"W. 110th St and Lenox Ave (Central Park North), New York, NY","area":"Central Park North","type":"Farmers' Market","notes":"Small but growing, Saturdays 10am–5pm","num":31,"lat":40.7981639,"lon":-73.9526339}
 ];
 
 /* ------------------------------------------------------------------ *
@@ -1113,12 +1119,13 @@ const PLACES = [
  * literal Type text from the sheet.
  * ------------------------------------------------------------------ */
 const CATEGORIES = [
-  { key: "landmark",   label: "Historical Landmark", color: "#c98500", test: t => /landmark/i.test(t) },
+  { key: "landmark",   label: "Landmark / Culture",   color: "#c98500", test: t => /landmark|museum|library|research center|\bhome\b/i.test(t) },
+  { key: "park",       label: "Park",                  color: "#e87ba4", test: t => /park/i.test(t) },
   { key: "wine",       label: "Wine Shop",            color: "#e34948", test: t => /wine/i.test(t) },
   { key: "store",      label: "Store",                color: "#008300", test: t => /store/i.test(t) },
-  { key: "delivery",   label: "Delivery",              color: "#1baf7a", test: t => /delivery/i.test(t) },
+  { key: "farmers",    label: "Farmers' Market",       color: "#1baf7a", test: t => /farmers/i.test(t) },
   { key: "bar",        label: "Bar / Nightlife",       color: "#4a3aa7", test: t => /\bbar\b/i.test(t) },
-  { key: "restaurant", label: "Restaurant",            color: "#eb6834", test: t => /restaurant/i.test(t) },
+  { key: "restaurant", label: "Restaurant",            color: "#eb6834", test: t => /restaurant|delivery/i.test(t) },
   { key: "cafe",       label: "Cafe",                  color: "#2a78d6", test: () => true },
 ];
 
@@ -1141,14 +1148,15 @@ const map = L.map('map', {
 
 L.control.zoom({ position: 'topright' }).addTo(map);
 
-// Colorful, fully-labeled basemap (Google/Apple-Maps style) -- every
-// surrounding street name comes straight from the tile provider, which
-// handles label placement and zoom-dependent density far better than any
-// hand-placed overlay could. This is a real map, not a custom drawing.
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 20
+// Fully-labeled basemap straight from OpenStreetMap's own free tile service --
+// no API key, ever (this replaces an earlier CARTO tile source that recently
+// started requiring a key and showed "API KEY REQUIRED" watermarks instead of
+// map tiles). Every surrounding street name comes straight from the tile
+// data, which handles label placement and zoom-dependent density far better
+// than any hand-placed overlay could.
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 19
 }).addTo(map);
 
 // A thin, muted vector-drawn street grid, rendered directly by the browser
@@ -1161,8 +1169,8 @@ map.createPane('gridLinePane');
 map.getPane('gridLinePane').style.zIndex = 300;
 map.getPane('gridLinePane').style.pointerEvents = 'none';
 
-const STREET_LINES = [[[40.7935327,-73.9438104],[40.800244,-73.9594562]],[[40.7941733,-73.9433308],[40.8008847,-73.9589766]],[[40.794814,-73.9428511],[40.8015253,-73.9584969]],[[40.7954546,-73.9423715],[40.8021659,-73.9580173]],[[40.7960952,-73.9418919],[40.8028066,-73.9575376]],[[40.7967359,-73.9414122],[40.8034472,-73.957058]],[[40.7973765,-73.9409326],[40.8040879,-73.9565784]],[[40.7980172,-73.9404529],[40.8047285,-73.9560987]],[[40.7986578,-73.9399733],[40.8053691,-73.9556191]],[[40.7992984,-73.9394937],[40.8060098,-73.9551394]],[[40.7999391,-73.939014],[40.8066504,-73.9546598]],[[40.8005797,-73.9385344],[40.807291,-73.9541801]],[[40.8012203,-73.9380547],[40.8079317,-73.9537005]],[[40.801861,-73.9375751],[40.8085723,-73.9532209]],[[40.8025016,-73.9370954],[40.809213,-73.9527412]],[[40.8031423,-73.9366158],[40.8098536,-73.9522616]],[[40.8037829,-73.9361362],[40.8104942,-73.9517819]],[[40.8044235,-73.9356565],[40.8111349,-73.9513023]],[[40.8050642,-73.9351769],[40.8117755,-73.9508227]],[[40.8057048,-73.9346972],[40.8124162,-73.950343]],[[40.8063455,-73.9342176],[40.8130568,-73.9498634]],[[40.8069861,-73.9337379],[40.8136974,-73.9493837]],[[40.8076267,-73.9332583],[40.8143381,-73.9489041]],[[40.8082674,-73.9327787],[40.8149787,-73.9484244]],[[40.808908,-73.932299],[40.8156194,-73.9479448]]];
-const AVENUE_LINES = [[[40.7970748,-73.9534493],[40.8128986,-73.9416021]],[[40.7982685,-73.9562319],[40.8140922,-73.9443847]],[[40.7994852,-73.9590684],[40.815309,-73.9472212]],[[40.7943403,-73.9470745],[40.8101641,-73.9352273]]];
+const STREET_LINES = [[[40.792892,-73.9442901],[40.8000024,-73.9608662]],[[40.7935327,-73.9438104],[40.8006431,-73.9603865]],[[40.7941733,-73.9433308],[40.8012837,-73.9599069]],[[40.794814,-73.9428511],[40.8019244,-73.9594272]],[[40.7954546,-73.9423715],[40.802565,-73.9589476]],[[40.7960952,-73.9418919],[40.8032056,-73.958468]],[[40.7967359,-73.9414122],[40.8038463,-73.9579883]],[[40.7973765,-73.9409326],[40.8044869,-73.9575087]],[[40.7980172,-73.9404529],[40.8051276,-73.957029]],[[40.7986578,-73.9399733],[40.8057682,-73.9565494]],[[40.7992984,-73.9394937],[40.8064088,-73.9560697]],[[40.7999391,-73.939014],[40.8070495,-73.9555901]],[[40.8005797,-73.9385344],[40.8076901,-73.9551105]],[[40.8012203,-73.9380547],[40.8083307,-73.9546308]],[[40.801861,-73.9375751],[40.8089714,-73.9541512]],[[40.8025016,-73.9370954],[40.809612,-73.9536715]],[[40.8031423,-73.9366158],[40.8102527,-73.9531919]],[[40.8037829,-73.9361362],[40.8108933,-73.9527122]],[[40.8044235,-73.9356565],[40.8115339,-73.9522326]],[[40.8050642,-73.9351769],[40.8121746,-73.951753]],[[40.8057048,-73.9346972],[40.8128152,-73.9512733]],[[40.8063455,-73.9342176],[40.8134559,-73.9507937]],[[40.8069861,-73.9337379],[40.8140965,-73.950314]],[[40.8076267,-73.9332583],[40.8147371,-73.9498344]],[[40.8082674,-73.9327787],[40.8153778,-73.9493547]],[[40.808908,-73.932299],[40.8160184,-73.9488751]],[[40.8095487,-73.9318194],[40.816659,-73.9483955]],[[40.8101893,-73.9313397],[40.8172997,-73.9479158]],[[40.8108299,-73.9308601],[40.8179403,-73.9474362]],[[40.8114706,-73.9303804],[40.818581,-73.9469565]],[[40.8121112,-73.9299008],[40.8192216,-73.9464769]]];
+const AVENUE_LINES = [[[40.7964342,-73.9539289],[40.8161018,-73.9392039]],[[40.7976278,-73.9567116],[40.8172954,-73.9419865]],[[40.7988446,-73.959548],[40.8185122,-73.944823]],[[40.7936997,-73.9475541],[40.8133673,-73.9328291]]];
 
 STREET_LINES.forEach(pts => {
   L.polyline(pts, { pane: 'gridLinePane', color: '#8a8a82', weight: 1.2, opacity: 0.55 }).addTo(map);
